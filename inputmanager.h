@@ -2,10 +2,10 @@
 #define INPUTMANAGER_H
 
 #include <QString>
-#include <QDomDocument>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
+#include <QtXml/QDomDocument>
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkRequest>
+#include <QtNetwork/QNetworkReply>
 #include <QEventLoop>
 #include <QProcess>
 #include <QFile>
@@ -40,7 +40,7 @@ public:
        *\param [in] OutputPathToXml - Путь к файлу/URL, где содержится xml-разметка
        *\return - возвращает true, если конвертация произошла успешно
        */
-    virtual bool htmlToXml(const QString InputPathToHtml, const QString OutputPathToXml); ///< pure virtual function
+    bool htmlToXml(const QString InputPathToHtml, const QString OutputPathToXml);
 };
 
 #endif // INPUTMANAGER_H

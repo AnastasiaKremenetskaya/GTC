@@ -1,11 +1,30 @@
 #ifndef FILEINPUTMANAGER_H
 #define FILEINPUTMANAGER_H
 
+#include <QFile>
+#include "inputmanager.h"
 
-class FileInputManager
+/*!
+    \brief Дочерний класс, цель - загрузка данных из файла
+
+    Дочерний класс, который отнаследован от ранее созданного класса InputManager
+*/
+class FileInputManager : public InputManager
 {
 public:
-    FileInputManager();
+    FileInputManager(void);
+    ~FileInputManager(void);
+
+    /*!
+     * Получает html-текст по указанному пути и представляет его в виде фрейма
+     *\param[in] Path Путь к файлу, где содержится html-текст
+     *\param [in] PathToOutputFile - Путь к файлу, куда необходимо сохранить результат
+*/
+    virtual void getData(QString URL, QString PathToOutputFile);
+
+private:
+
+    QFile InputFile;
 };
 
 #endif // FILEINPUTMANAGER_H

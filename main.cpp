@@ -4,6 +4,7 @@
 #include "webinputmanager.h"
 #include "tableofcontents.h"
 #include "outputmanager.h"
+#include <QtXml/QDomDocument>
 
 #define qprint qDebug().nospace().noquote()
 
@@ -36,38 +37,36 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
     //temporary
-    QString input("file://mac/Home/Desktop/example.html");
-    QString output("file://mac/Home/Desktop/result.html");
+    QString input("file:///C:/QtCreator/Projects/example.html");
+    QString output("file:///C:/QtCreator/Projects/result.html");
     //temporary
 
     QString OutputHtml; ///> Строка со сгенерированным html-кодом
 
-    QDomDocument DomTree; ///> Дом-дерево html-разметки
-
-    QRegExp UrlRegexp;//("(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%.\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%\+.~#?&//=]*)"); ///> Регулярное выражение для проверки урла
+    QRegExp UrlRegexp("^http(s)?:)"); ///> Регулярное выражение для проверки урла
 
     //Определить, откуда получать данные
     InputManager * IM;
 
     if(QString(argv[1]).contains(UrlRegexp)) {
-        IM = new WebInputManager;
+        IM = new WebInputManager();
     }
     else {
-        IM = new FileInputManager;
+        IM = new FileInputManager();
     }
 
-    //Получить данные
-    IM->getData(input, output);
+//    //Получить данные
+//    IM->getData(input, output);
 
-    //Конвертировать html-разметку в xml-разметку
-    IM->htmlToXml(output, output);
+//    //Конвертировать html-разметку в xml-разметку
+//    IM->htmlToXml(output, output);
 
-    //Сгенерировать оглавление
-    TableOfContents * TOC = new TableOfContents(input, DomTree);
-    TOC->writeXmlDoc(output);
+//    //Сгенерировать оглавление
+//    TableOfContents * TOC = new TableOfContents(input, DomTree);
+//    TOC->writeXmlDoc(output);
 
     //Записать сгенерированное оглавление в файл
-    OutputManager * OM = new OutputManager; //поменять на статик??
+    OutputManager * OM = new OutputManager(); //поменять на статик??
     OM->xmlToHtml(input, output);
 
     return a.exec();
