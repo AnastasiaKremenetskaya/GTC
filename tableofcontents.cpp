@@ -96,7 +96,22 @@ void TableOfContents::getChildren(QDomNode & Node, QVector<QDomNode> & NodeChild
     }
 }
 
+void TableOfContents::getHeaderNestingOrder() {
+
+    QString tags;
+    //Занести порядок заголовочного тега в строку
+    for (int i = 0; i < HeaderCollection.length(); i++) {
+       tags.append(HeaderCollection[i].tagName());
+    }
+    tags.remove('h');
+
+    for (int i = 0; i < HeaderCollection.length(); i++) {
+        this->NestingOrder.append(tags[i].digitValue());
+    }
+    qDebug() << NestingOrder;
+}
 void TableOfContents::setTab(){
+
     //Алгоритм:
     //1. Объявить <ul>
     //2. Добавить связь узла с <ul>
@@ -114,7 +129,7 @@ void TableOfContents::setTab(){
     //4. Объявить закрывающий </ul>
 
     //Добавить в начало список
-    QDomNode ul = InputDomTree.createElement("ul");
+    //QDomNode ul = InputDomTree.createElement("ul");
     //Добавить пункт списка к первому элементу коллекции
 
     //    for(int i = 0; i < Headers.count(); i++) {
@@ -129,25 +144,81 @@ void TableOfContents::setTab(){
 }
 
 void TableOfContents::modifyHeaderCollectionAttributes() {
-    //    Алгоритм:
-    //    1. Для каждого элемента узла
-    //        1. 1. Заменить тег узла на <a>
-    //        1. 2. Добавить атрибут, задающий ссылку на первоначальный документ
+    //Для каждого элемента коллекции веб-элементов
+    for (int i = 0; i < this->HeaderCollection.length(); i++) {
+        //Добавить якорную ссылку
+        HeaderCollection[i].setAttribute("href", this->InputPathToHtml);
+    }
+}
+
+void TableOfContents::createOutputTree() {
+    //Создать новое дерево
+    OutputDomTree.createElement(this->Root.nodeValue());
+
+    //Объявить основной список
+    QDomNode ul = OutputDomTree.createElement("ul");
+
+    QDomNode li = OutputDomTree.createElement("li");
+    ul.appendChild(li);
+    li.appendChild(HeaderCollection[0]);
+
+    HeaderCollection[0].setTagName("a");
+
+    //Для каждого найденного заголовка
+    for (int i = 0; i < HeaderCollection.length()-1; i++) {
+
+        //Если уровень родительского элемента ниже уровня текущего элемента
+        if(NestingOrder[i] > NestingOrder[i+1]) {
+            //Добавить новый <ul>
+            QDomNode ul = OutputDomTree.createElement("ul");
+            QDomNode li = OutputDomTree.createElement("li");
+            ul.appendChild(li);
+            li.appendChild(HeaderCollection[i+1]);
+            //Заменить заголовочный тег на ссылочный тег
+            HeaderCollection[i+1].setTagName("a");
+        }
+        //Иначе если уровень родительского элемента выше уровня текущего элемента
+        else if (NestingOrder[i] < NestingOrder[i+1]) {
+
+        }
+            //		3. 1. 1. Добавить новый <ul>
+            //		3. 1. 2. Добавить связь узла с <ul>
+            //		3. 1. 3. Добавить новый пункт списка <li>
+            //		3. 1. 4. Добавить связь узла с <li>
+            //	3. 2. Иначе, если уровень родительского тега h ниже уровня текущего тега
+            //		3. 2. 1. Добавить связь родителя с тегом <ul>
+            //		3. 2. 2. Добавить новый пункт списка <li>
+            //	3. 3. Иначе если уровень родительского тега h равен уровню текущего тега
+            //		3. 3. 1. Добавить новый пункт списка <li>
+            //4. Объявить закрывающий </ul>
 
 
+    }
+    //Организовать вложенность
+    //setTab();
+
+    //Заменить заголовочный тег на ссылочный тег
+    //this->OutputDomTree.
+    qDebug() <<"Please, work" <<this->OutputDomTree.toString();
 }
 
 bool TableOfContents::writeXmlDoc() {
 
     //Выполнить поиск заголовочных тегов в исходном дом-дереве
     generateTOC(this->Root);
+
+    //Проверить документ на наличие заголовочных тегов
     if(this->HeaderCollection.length()==0)
         throw QString("Generation  of Table of contents is impossible: no headers in markup detected");
+setTab();
+    //Сделать элементы якорными ссылками
+    //modifyHeaderCollectionAttributes();
 
-    // modifyHeaderCollectionAttributes();
-    //setTab();
+    //Создать выходное дерево из необходимых элементов
+    //createOutputTree();
 
-    // Открыть xml для записи
+
+    //Записать сгенерированное оглавление в выходной файл
     QFile xml(this->OutputPathToHtml);
     if (!xml.open(QIODevice::WriteOnly))
         throw QString("Unable to write xml data to result file");

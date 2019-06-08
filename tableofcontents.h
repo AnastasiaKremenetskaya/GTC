@@ -44,6 +44,8 @@ public:
 private:
 
     QVector<QDomElement>HeaderCollection; ///> Заголовочные веб-элементы
+    QVector<int>NestingOrder;
+    QString ParsedInputXmlStr;
     QDomNode Root; ///> Корневой узел дерева
     QString ErrorMsg; ///> Сообщение об ошибке
     int ErrorLine; ///> Строка, в которой обнаружена ошибка
@@ -73,14 +75,18 @@ private:
     void getChildren(QDomNode & Node, QVector<QDomNode> & NodeChildren);
 
     /*!
-    Определяет отступы по уровню вложенности элементов
-    */
-    void setTab();
-
-    /*!
     Изменяет атрибуты заголовочных веб-элементов
     */
     void modifyHeaderCollectionAttributes();
+
+    void getHeaderNestingOrder();
+
+    void createOutputTree();
+
+    /*!
+    Определяет отступы по уровню вложенности элементов
+    */
+    void setTab();
 
 };
 
