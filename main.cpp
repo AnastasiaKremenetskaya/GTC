@@ -6,7 +6,7 @@
 #include "outputmanager.h"
 #include <QtXml/QDomDocument>
 
-#define qprint qDebug().nospace().noquote()
+#define qprint qDebug().nospace()
 
 /*!
 \mainpage
@@ -37,37 +37,46 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
     //temporary
-    QString input("file:///C:/QtCreator/Projects/example.html");
-    QString output("file:///C:/QtCreator/Projects/result.html");
+    QString input("C:/QtCreator/Projects/example.html");
+    QString output("C:/QtCreator/Projects/result.html");
     //temporary
 
     QString OutputHtml; ///> Строка со сгенерированным html-кодом
 
-    QRegExp UrlRegexp("^http(s)?:)"); ///> Регулярное выражение для проверки урла
+    QRegExp UrlRegexp("http(s)?:)"); ///> Регулярное выражение для проверки урла
 
-    //Определить, откуда получать данные
-    InputManager * IM;
+    try {
+        //Определить, откуда получать данные
+        InputManager * IM;
 
-    if(QString(argv[1]).contains(UrlRegexp)) {
-        IM = new WebInputManager();
+        if(QString(argv[1]).contains(UrlRegexp)) {
+            IM = new WebInputManager();
+        }
+        else {
+            IM = new FileInputManager();
+        }
+
+        //------Получение данных------//
+        IM->getData(input, output);
+
+        //Конвертировать html-разметку в xml-разметку
+        IM->htmlToXml(output, output);
+
+
+        //------Генерация оглавления------//
+        //TableOfContents * TOC = new TableOfContents(input);
+        //TOC->writeXmlDoc(output);
+
+
+        //------Вывод данных------//
+        //OutputManager * OM = new OutputManager(); //поменять на статик??
+        //OM->xmlToHtml(input, output);
+
     }
-    else {
-        IM = new FileInputManager();
+
+    catch (QString ErrorString) {
+        qprint << ErrorString;
     }
-
-//    //Получить данные
-//    IM->getData(input, output);
-
-//    //Конвертировать html-разметку в xml-разметку
-//    IM->htmlToXml(output, output);
-
-//    //Сгенерировать оглавление
-//    TableOfContents * TOC = new TableOfContents(input, DomTree);
-//    TOC->writeXmlDoc(output);
-
-    //Записать сгенерированное оглавление в файл
-    OutputManager * OM = new OutputManager(); //поменять на статик??
-    OM->xmlToHtml(input, output);
 
     return a.exec();
 }

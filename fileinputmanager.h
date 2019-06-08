@@ -17,14 +17,13 @@ public:
 
     /*!
      * Получает html-текст по указанному пути и представляет его в виде фрейма
-     *\param[in] Path Путь к файлу, где содержится html-текст
+     *\param[in] PathToInputFile Путь к файлу, где содержится html-текст
      *\param [in] PathToOutputFile - Путь к файлу, куда необходимо сохранить результат
 */
-    virtual void getData(QString URL, QString PathToOutputFile);
+    virtual void getData(QString PathToInputFile, QString PathToOutputFile);
 
 private:
 
-    QFile InputFile;
 };
 
 #endif // FILEINPUTMANAGER_H
