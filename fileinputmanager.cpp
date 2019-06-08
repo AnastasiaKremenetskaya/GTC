@@ -21,10 +21,8 @@ void FileInputManager::getData(QString PathToInputFile, QString PathToOutputFile
         QTextStream in(&InputFile);
 
         while (!in.atEnd()) {
-
             //Сохранить данныe в строку
             InputHtml += in.readLine();
-           // qDebug() << InputHtml;
         }
 
         //Закрыть файл

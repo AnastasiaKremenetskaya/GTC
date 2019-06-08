@@ -64,8 +64,10 @@ int main(int argc, char *argv[])
 
 
         //------Генерация оглавления------//
-        //TableOfContents * TOC = new TableOfContents(input);
-        //TOC->writeXmlDoc(output);
+        TableOfContents * TOC = new TableOfContents(input, output);
+        TOC->validateXml();
+        TOC->writeXmlDoc();
+        TOC->deleteThisIsForTest();
 
 
         //------Вывод данных------//

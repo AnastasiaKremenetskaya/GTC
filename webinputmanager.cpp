@@ -31,8 +31,12 @@ void WebInputManager::getData(QString URL, QString PathToOutputFile){
 
     // Если удалось открыть файл для записи
     if(OutputFile.open(QIODevice::WriteOnly)) {
-        QTextStream out(&PathToOutputFile);
+
+        QTextStream out(&OutputFile);
+
         out << InputHtml;
+
+        out.flush();
     }
     else {
         OutputFile.close();

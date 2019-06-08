@@ -5,8 +5,6 @@
 #include <QFile>
 #include <QDebug>
 
-#define qprint qDebug().nospace().noquote()
-
 /*!
 \brief Класс для генерации оглавления
 
@@ -26,33 +24,34 @@ public:
     TableOfContents(void);
     ~TableOfContents(void);
 
-    //Конструктор копирования
-    TableOfContents(const QString InputPathToHtml, QDomDocument & DomTree);
-
-    QString InputPathToHtml; ///> Путь к файлу/URL, где содержится html ( Для организации якорей)
-    QDomNode Root; ///> Корневой узел дерева
+    //Конструктор
+    TableOfContents(const QString InputPathToHtml, const QString OutputPathToHtml);
 
     /*!
        * Проверка корректности xml-разметки
        *\param [in] OutputPathToXml - Путь к файлу/URL, где содержится xml-разметка
-       *\param [out] treeHtml - Исходное дерево html-разметки
        *\return - возвращает true, если разметка валидна
        */
-    bool validateXml(const QString OutputPathToXml, QDomDocument & tree);
+    bool validateXml();
+
+    void deleteThisIsForTest();
 
     /*!
-    Заносит оглавление в результирующий файл
-    \param[in] OutputPathToXml - Путь к файлу/URL, где содержится xml-разметка
+    Генерирует и заносит оглавление в результирующий файл
     */
-    bool writeXmlDoc(const QString OutputPathToXml);
+    bool writeXmlDoc();
 
 private:
 
-    QVector<QDomNode> NodeChildren; ///> Cписок детей узла
+    QVector<QDomElement>HeaderCollection; ///> Заголовочные веб-элементы
+    QDomNode Root; ///> Корневой узел дерева
     QString ErrorMsg; ///> Сообщение об ошибке
     int ErrorLine; ///> Строка, в которой обнаружена ошибка
     int ErrorColumn; ///> Столбец, в котором обнаружена ошибка
-    QDomDocument DomTree; ///> Дом-дерево html-разметки
+    QDomDocument InputDomTree; ///> Исходное дом-дерево html-разметки
+    QDomDocument OutputDomTree; ///> Сгенерированное дом-дерево html-разметки
+    QString InputPathToHtml; ///> Путь к файлу/URL, где содержится html ( Для организации якорей)
+    QString OutputPathToHtml; ///> Путь к файлу/URL, где содержится html ( Для организации якорей)
 
     /*!
     Генерирует оглавление, используя рекурсивный префиксный обход дерева в глубину
@@ -61,22 +60,10 @@ private:
     void generateTOC(QDomNode CurrentNode); //объединение нижних функций
 
     /*!
-    Выполняет поиск заголовочных тегов
-    /return вернуть все узлы дерева, являющиеся заголовками;
+    Выполняет поиск в глубину заголовочных тегов в заданном узле
+     *\param [in] NodeChildren - Список детей данного узла
     */
-    //QDomNodeList parseHeaders();
-
-    /*!
-    Определяет отступы по уровню вложенности элементов
-    *\param [in] Node - Узел дерева
-    */
-    void setTab(QDomNode & Node);
-
-    /*!
-    Изменяет атрибуты заголовочных веб-элементов
-    *\param [in] Node - Узел дерева
-    */
-    void modifyHeaderCollectionAttributes(QDomNode & Node);
+    void parseHeaders(QVector<QDomNode> & NodeChildren);
 
     /*!
      * Получает список детей текущего узла
@@ -84,6 +71,17 @@ private:
      *\param [out] NodeChildren - Список детей данного узла
      */
     void getChildren(QDomNode & Node, QVector<QDomNode> & NodeChildren);
+
+    /*!
+    Определяет отступы по уровню вложенности элементов
+    */
+    void setTab();
+
+    /*!
+    Изменяет атрибуты заголовочных веб-элементов
+    */
+    void modifyHeaderCollectionAttributes();
+
 };
 
 #endif // TABLEOFCONTENTS_H
