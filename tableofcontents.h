@@ -79,9 +79,19 @@ private:
     */
     void modifyHeaderCollectionAttributes();
 
+    /*!
+    Получает порядок вложенности заголовочных веб-элементов
+    */
     void getHeaderNestingOrder();
 
+    /*!
+    Формирует сгенерированное дерево
+    */
     void createOutputTree();
+
+    void appendNestingLevels(QDomElement &CurrentElement, int LevelAmount);
+
+    void removeNestingLevels(QDomElement & CurrentElement, int LevelAmount);
 
     /*!
     Определяет отступы по уровню вложенности элементов
