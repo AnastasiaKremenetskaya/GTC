@@ -80,24 +80,29 @@ private:
     void modifyHeaderCollectionAttributes();
 
     /*!
-    Получает порядок вложенности заголовочных веб-элементов
+    Запоминает порядок вложенности заголовочных веб-элементов
     */
     void getHeaderNestingOrder();
+
+
+    /*!
+     * Сдвигает входной элемент вправо
+     *\param [in] CurrentElement - Элемент дерева
+     *\param [in] LevelAmount - Требуемый уровень вложенности
+     */
+    void appendNestingLevels(QDomElement &CurrentElement, int LevelAmount);
+
+    /*!
+     * Сдвигает входной элемент влево
+     *\param [in] CurrentElement - Элемент дерева
+     *\param [in] LevelAmount - Требуемый уровень вложенности
+     */
+    void removeNestingLevels(QDomElement & CurrentElement, int LevelAmount);
 
     /*!
     Формирует сгенерированное дерево
     */
     void createOutputTree();
-
-    void appendNestingLevels(QDomElement &CurrentElement, int LevelAmount);
-
-    void removeNestingLevels(QDomElement & CurrentElement, int LevelAmount);
-
-    /*!
-    Определяет отступы по уровню вложенности элементов
-    */
-    void setTab();
-
 };
 
 #endif // TABLEOFCONTENTS_H
