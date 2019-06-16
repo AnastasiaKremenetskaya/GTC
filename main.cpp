@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     QString output("C:/QtCreator/Projects/result.html");
     //temporary
 
-    QString OutputHtml; ///> Строка со сгенерированным html-кодом
+    QByteArray OutputHtml; ///> Строка со сгенерированным html-кодом
 
     QRegExp UrlRegexp("http(s)?:)"); ///> Регулярное выражение для проверки урла
 
@@ -66,13 +66,11 @@ int main(int argc, char *argv[])
         //------Генерация оглавления------//
         TableOfContents * TOC = new TableOfContents(input, output);
         TOC->validateXml();
-        TOC->writeXmlDoc();
-        TOC->deleteThisIsForTest();
-
+        OutputHtml = TOC->getGeneratedHtml();
 
         //------Вывод данных------//
-        //OutputManager * OM = new OutputManager(); //поменять на статик??
-        //OM->xmlToHtml(input, output);
+        OutputManager * OM = new OutputManager();
+        OM->writeHtml(OutputHtml, output);
 
     }
 

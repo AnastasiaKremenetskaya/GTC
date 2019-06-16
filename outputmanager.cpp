@@ -9,14 +9,15 @@ OutputManager::~OutputManager()
 {
 }
 
-bool OutputManager::xmlToHtml(const QString OutputPathToXml, const QString OutputPathToHtml) {
-    QStringList params; // параметры для запуска xmllint
+bool OutputManager::writeHtml(QByteArray GeneratedHtml, QString OutputPathToHtml) {
+    //Записать сгенерированное оглавление в выходной файл
+    QFile xml(OutputPathToHtml);
 
-    params << "-html" << "-htmlout" << OutputPathToXml << "-output" << OutputPathToHtml;
+    if (!xml.open(QIODevice::WriteOnly))
+        throw QString("Unable to write data to result file");
 
-    if(QProcess::execute("xmllint", params) != QProcess::NormalExit) {
-        throw QString("Unable to create xmllint process. Termination");
-    }
+    xml.write(GeneratedHtml);
+    xml.close();
 
     return true;
 }
