@@ -143,125 +143,99 @@ void TableOfContents::createOutputTree() {
 
     //Импортировать корневой узел из исходного дерева
     QDomNode root = InputDomTree.importNode(this->Root, false);
+    QDomNode body = InputDomTree.importNode(this->Root.firstChild(), false);
+    root.appendChild(body);
     OutputDomTree.appendChild(root);
 
     //Создать основной список
-    QDomNode ul = OutputDomTree.createElement("ul");
-    ul = root.firstChild();
-
-    //------Добавить в список заголовки------//
-
-    //Задать вложенность первому заголовку
-
-    if(NestingOrder[0] > 1) {
-        appendNestingLevels(HeaderCollection[0], NestingOrder[0]);
-    }
-    else {
-        //Добавить <li>
-        QDomNode li = OutputDomTree.createElement("li");
-
-        ul.appendChild(li);
-
-        //Добавить связь элемента с <li>
-        li.appendChild(HeaderCollection[0]);
-    }
+    QDomNode MainUl = OutputDomTree.createElement("ul");
+    body.appendChild(MainUl);
 
     //Задать вложенность прочим заголовкам
 
-//    //Для каждого найденного заголовка
-//    for (int i = 1; i < HeaderCollection.length() && i < NestingOrder.length(); i++) {
-
-//        //Если уровень родительского элемента выше уровня текущего элемента
-//        if(NestingOrder[i-1] < NestingOrder[i]) {
-//            //Задать необходимую вложенность
-//            appendNestingLevels(HeaderCollection[i],NestingOrder[i] - NestingOrder[i-1]);
-//        }
-
-//        //Иначе, если уровень родительского элемента ниже уровня текущего элемента
-//        else if(NestingOrder[i-1] > NestingOrder[i]) {
-//            //Задать необходимую вложенность
-//            removeNestingLevels(HeaderCollection[i],NestingOrder[i-1] - NestingOrder[i]);
-//        }
-
-//        //Иначе
-//        else {
-//            //Добавить <li>
-//            QDomNode li = OutputDomTree.createElement("li");
-
-//            //Добавить связь элемента с <li>
-//            li.appendChild(HeaderCollection[i]);
-//        }
-//    }
-
-    qDebug() <<"Please, work" <<OutputDomTree.toString();
-}
-
-void TableOfContents::appendNestingLevels(QDomElement &CurrentElement, int LevelAmount) {
-//QDomNode parent = OutputDomTree.lastChild();
-//qDebug() << parent.toElement().tagName();
-
-    //Задать элементу требуемый уровень вложенности
-     //  while (LevelAmount > 1 && !parent.isNull()) {
-
-         // parent.appendChild(this->OutputDomTree.createElement("ul"));
-         // parent.appendChild(this->OutputDomTree.createElement("ul"));
-
-           //Добавить новый <ul>
-       // parent.appendChild(this->OutputDomTree.createElement("ul"));
-    //    OutputDomTree.insertBefore( this->OutputDomTree.createElement("ul"), parent);
-
-      //  parent = parent.parentNode();
-        //   --LevelAmount;
-
-     //  }
-
-LevelAmount = 6;
-    //Добавить <ul>
-    QDomNode ul = this->OutputDomTree.createElement("ul");
-   //Добавить <li>
-    QDomNode li = this->OutputDomTree.createElement("li");
-   //Добавить связь <ul> с <li>
-
-  ul.appendChild(li);
-
-//    //Добавить связь элемента с <li>
-  li.appendChild(CurrentElement);
-  OutputDomTree.lastChild().appendChild(ul);
- // while (LevelAmount > 1) {
-      //OutputDomTree.insertBefore(OutputDomTree.createElement("ul"), CurrentElement);
-      LevelAmount--;
-
- // }
-
-
-}
-
-void TableOfContents::removeNestingLevels(QDomElement &CurrentElement, int LevelAmount) {
-
-    //Добавить <li>
-    QDomNode li = this->OutputDomTree.createElement("li");
-
-    //Добавить связь элемента с <li>
-    li.appendChild(CurrentElement);
-
-    QDomNode InsertingNode = CurrentElement.parentNode();///> Узел для вставки
-
-    //Инсертнуть сразу на требуемый уровень вложенности, значит передать как аргумент узел, куда инсертить
-
-    //Определить в дереве место для вставки
-    while (LevelAmount > 1) {
-
-        InsertingNode = InsertingNode.parentNode();
-
-        //InsertingNode = OutputDomTree.previousSibling();
-
-        --LevelAmount;
+    //Для каждого найденного заголовка
+    for (int i = 0; i < HeaderCollection.length() && i < NestingOrder.length(); i++) {
+        appendNestingLevels(HeaderCollection[i], NestingOrder[i], MainUl);
     }
-    //Вставить пункт зоголовок в соответствии с порядком вложенности
-    this->OutputDomTree.insertAfter(li, InsertingNode);
+
+    qDebug() <<"Please, work/n" <<OutputDomTree.toString();
 }
 
-bool TableOfContents::writeXmlDoc() {
+void TableOfContents::appendNestingLevels(QDomElement &CurrentElement, int LevelAmount, QDomNode NestingNode) { 
+
+    //------Добавить в список заголовки------//
+    switch (LevelAmount) {
+    case 2:{
+        QDomNode ul = OutputDomTree.createElement("ul");
+        QDomNode li = OutputDomTree.createElement("li");
+        ul.appendChild(li);
+        li.appendChild(CurrentElement);
+        NestingNode.appendChild(ul);
+        break;
+    }
+    case 3:{
+        QDomNode ul1 = OutputDomTree.createElement("ul");
+        QDomNode ul = OutputDomTree.createElement("ul");
+        QDomNode li = OutputDomTree.createElement("li");
+        ul1.appendChild(ul);
+        ul.appendChild(li);
+        li.appendChild(CurrentElement);
+        NestingNode.appendChild(ul1);
+        break;
+    }
+    case 4:{
+        QDomNode ul2 = OutputDomTree.createElement("ul");
+        QDomNode ul1 = OutputDomTree.createElement("ul");
+        QDomNode ul = OutputDomTree.createElement("ul");
+        QDomNode li = OutputDomTree.createElement("li");
+        ul2.appendChild(ul1);
+        ul1.appendChild(ul);
+        ul.appendChild(li);
+        li.appendChild(CurrentElement);
+        NestingNode.appendChild(ul2);
+        break;
+    }
+
+    case 5: {
+        QDomNode ul3 = OutputDomTree.createElement("ul");
+        QDomNode ul2 = OutputDomTree.createElement("ul");
+        QDomNode ul1 = OutputDomTree.createElement("ul");
+        QDomNode ul = OutputDomTree.createElement("ul");
+        QDomNode li = OutputDomTree.createElement("li");
+        ul3.appendChild(ul2);
+        ul2.appendChild(ul1);
+        ul1.appendChild(ul);
+        ul.appendChild(li);
+        li.appendChild(CurrentElement);
+        NestingNode.appendChild(ul3);
+        break;
+    }
+    case 6: {
+        QDomNode ul4 = OutputDomTree.createElement("ul");
+        QDomNode ul3 = OutputDomTree.createElement("ul");
+        QDomNode ul2 = OutputDomTree.createElement("ul");
+        QDomNode ul1 = OutputDomTree.createElement("ul");
+        QDomNode ul = OutputDomTree.createElement("ul");
+        QDomNode li = OutputDomTree.createElement("li");
+        ul4.appendChild(ul3);
+        ul3.appendChild(ul2);
+        ul2.appendChild(ul1);
+        ul1.appendChild(ul);
+        ul.appendChild(li);
+        li.appendChild(CurrentElement);
+        NestingNode.appendChild(ul4);
+        break;
+    }
+    default: {
+        QDomNode li = OutputDomTree.createElement("li");
+        li.appendChild(CurrentElement);
+        NestingNode.appendChild(li);
+        break;
+    }
+    }
+}
+
+bool TableOfContents::getGeneratedHtml() {
 
     //Выполнить поиск заголовочных тегов в исходном дом-дереве
     generateTOC(this->Root);
@@ -269,21 +243,20 @@ bool TableOfContents::writeXmlDoc() {
     //Проверить документ на наличие заголовочных тегов
     if(this->HeaderCollection.length()==0)
         throw QString("Generation  of Table of contents is impossible: no headers in markup detected");
-    //setTab();
 
     //Запомнить порядок вложенности
     getHeaderNestingOrder();
 
-//    //Сделать элементы якорными ссылками
-//    modifyHeaderCollectionAttributes();
+    //Сделать элементы якорными ссылками
+    modifyHeaderCollectionAttributes();
 
-//    //Создать выходное дерево из необходимых элементов
-//    createOutputTree();
+    //Создать выходное дерево из необходимых элементов
+    createOutputTree();
 
     //Записать сгенерированное оглавление в выходной файл
     QFile xml(this->OutputPathToHtml);
     if (!xml.open(QIODevice::WriteOnly))
-        throw QString("Unable to write xml data to result file");
+        throw QString("Unable to write data to result file");
     xml.write(OutputDomTree.toByteArray());
     xml.close();
 

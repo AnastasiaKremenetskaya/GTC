@@ -39,14 +39,14 @@ public:
     /*!
     Генерирует и заносит оглавление в результирующий файл
     */
-    bool writeXmlDoc();
+    bool getGeneratedHtml();
 
 private:
 
     QVector<QDomElement>HeaderCollection; ///> Заголовочные веб-элементы
     QVector<int>NestingOrder;
     QString ParsedInputXmlStr;
-    QDomNode Root; ///> Корневой узел дерева
+    QDomNode Root; ///> Корневой узел исходного дерева
     QString ErrorMsg; ///> Сообщение об ошибке
     int ErrorLine; ///> Строка, в которой обнаружена ошибка
     int ErrorColumn; ///> Столбец, в котором обнаружена ошибка
@@ -84,20 +84,12 @@ private:
     */
     void getHeaderNestingOrder();
 
-
     /*!
      * Сдвигает входной элемент вправо
      *\param [in] CurrentElement - Элемент дерева
      *\param [in] LevelAmount - Требуемый уровень вложенности
      */
-    void appendNestingLevels(QDomElement &CurrentElement, int LevelAmount);
-
-    /*!
-     * Сдвигает входной элемент влево
-     *\param [in] CurrentElement - Элемент дерева
-     *\param [in] LevelAmount - Требуемый уровень вложенности
-     */
-    void removeNestingLevels(QDomElement & CurrentElement, int LevelAmount);
+    void appendNestingLevels(QDomElement &CurrentElement, int LevelAmount, QDomNode NestingNode);
 
     /*!
     Формирует сгенерированное дерево
