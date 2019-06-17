@@ -1,3 +1,8 @@
+/*!
+\file
+\brief Заголовочный файл с описанием класса для получения данных из файла
+*/
+
 #ifndef FILEINPUTMANAGER_H
 #define FILEINPUTMANAGER_H
 
@@ -17,7 +22,7 @@ public:
 
     /*!
      * Получает html-текст по указанному пути и представляет его в виде фрейма
-     *\param[in] PathToInputFile Путь к файлу, где содержится html-текст
+     *\param[in] PathToInputFile - Путь к файлу, где содержится html-текст
      *\param [in] PathToOutputFile - Путь к файлу, куда необходимо сохранить результат
 */
     virtual void getData(QString PathToInputFile, QString PathToOutputFile);

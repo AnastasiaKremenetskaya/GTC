@@ -1,3 +1,10 @@
+/*!
+\file
+\brief Файл с реализацией методов класса для получения данных по URL
+
+Данный файл содержит в себе реализацию методов класса для получения данных по URL
+*/
+
 #include "webinputmanager.h"
 #include <QUrl>
 
@@ -10,6 +17,9 @@ WebInputManager::~WebInputManager()
 }
 
 void WebInputManager::getData(QString URL, QString PathToOutputFile){
+    //Задать необходимую кодировку
+    QTextCodec * defaultTextCodec = QTextCodec::codecForName("Windows-1251");
+    QTextDecoder * decoder = new QTextDecoder(defaultTextCodec);
 
     //Послать запрос
     response = manager.get(QNetworkRequest(QUrl(URL)));
@@ -24,7 +34,10 @@ void WebInputManager::getData(QString URL, QString PathToOutputFile){
     }
 
     // Сохранить полученные данные в строку
-    InputHtml = response->readAll();
+    InputHtmlAsBa = response->readAll();
+
+    InputHtmlAsString = decoder->toUnicode(InputHtmlAsBa);
+
 
     // Cохранить html-разметку в результирующий файл
     QFile OutputFile(PathToOutputFile);
@@ -34,7 +47,7 @@ void WebInputManager::getData(QString URL, QString PathToOutputFile){
 
         QTextStream out(&OutputFile);
 
-        out << InputHtml;
+        out << InputHtmlAsString.toUtf8();
 
         out.flush();
     }

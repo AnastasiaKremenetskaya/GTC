@@ -1,3 +1,8 @@
+/*!
+\file
+\brief Заголовочный файл с описанием абстрактного класса для получения входных данных
+*/
+
 #ifndef INPUTMANAGER_H
 #define INPUTMANAGER_H
 
@@ -9,6 +14,7 @@
 #include <QEventLoop>
 #include <QProcess>
 #include <QFile>
+#include <QTextCodec>
 
 /*!
     \brief Родительский класс, отвечающий за получение данных
@@ -24,7 +30,8 @@ public:
     InputManager(void);
     virtual ~InputManager(void);
 
-    QString InputHtml; ///> Входная html-разметка
+    QByteArray InputHtmlAsBa; ///> Байтовый массив с входной html-разметкой
+    QString InputHtmlAsString; ///> Строка с входной html-разметкой
 
     /*!
         * Получает html-текст и представляет его в виде фрейма

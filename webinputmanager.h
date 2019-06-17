@@ -1,3 +1,8 @@
+/*!
+\file
+\brief Заголовочный файл с описанием класса для получения данных по URL
+*/
+
 #ifndef WEBINPUTMANAGER_H
 #define WEBINPUTMANAGER_H
 
