@@ -136,7 +136,7 @@ void TableOfContents::modifyHeaderCollectionAttributes() {
     //Для каждого элемента коллекции веб-элементов
     for (int i = 0; i < this->HeaderCollection.length(); i++) {
         //Добавить якорную ссылку
-        HeaderCollection[i].setAttribute("href", this->InputPathToHtml);
+        HeaderCollection[i].setAttribute("href", this->InputPathToHtml+"#"+HeaderCollection[i].attributeNode("id").value());
         HeaderCollection[i].setTagName("a");
     }
 }
