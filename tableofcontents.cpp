@@ -1,3 +1,10 @@
+/*!
+\file
+\brief Файл с реализацией методов класса для генерации оглавления
+
+Данный файл содержит в себе реализацию методов класса для генерации оглавления
+*/
+
 #include "tableofcontents.h"
 
 TableOfContents::TableOfContents(void){};
@@ -29,7 +36,7 @@ bool TableOfContents::validateXml() {
 
         XmlFile.close();
 
-        throw QString("Failed to parse the file into a DOM tree. Error message: ") + ErrorMsg +
+        throw QString("Failed to parse file into DOM tree. Error message: ") + ErrorMsg +
                 " from line " + QString::number(ErrorLine) + ", column " + QString::number(ErrorColumn);
     }
 
@@ -142,8 +149,8 @@ void TableOfContents::createOutputTree() {
     OutputDomTree.setContent(ba);
 
     //Импортировать корневой узел из исходного дерева
-    QDomNode root = InputDomTree.importNode(this->Root, false);
-    QDomNode body = InputDomTree.importNode(this->Root.firstChild(), false);
+    QDomNode root = OutputDomTree.createElement("html");
+    QDomNode body = OutputDomTree.createElement("body");
     root.appendChild(body);
     OutputDomTree.appendChild(root);
 
@@ -162,8 +169,9 @@ void TableOfContents::createOutputTree() {
 }
 
 void TableOfContents::appendNestingLevels(QDomElement &CurrentElement, int LevelAmount, QDomNode NestingNode) { 
-
     //------Добавить в список заголовки------//
+
+    //В зависимости от уровня заголовка организовать вложенность
     switch (LevelAmount) {
     case 2:{
         QDomNode ul = OutputDomTree.createElement("ul");
@@ -235,7 +243,7 @@ void TableOfContents::appendNestingLevels(QDomElement &CurrentElement, int Level
     }
 }
 
-bool TableOfContents::getGeneratedHtml() {
+QByteArray TableOfContents::getGeneratedHtml() {
 
     //Выполнить поиск заголовочных тегов в исходном дом-дереве
     generateTOC(this->Root);
@@ -253,12 +261,9 @@ bool TableOfContents::getGeneratedHtml() {
     //Создать выходное дерево из необходимых элементов
     createOutputTree();
 
-    //Записать сгенерированное оглавление в выходной файл
-    QFile xml(this->OutputPathToHtml);
-    if (!xml.open(QIODevice::WriteOnly))
-        throw QString("Unable to write data to result file");
-    xml.write(OutputDomTree.toByteArray());
-    xml.close();
+    //Записать сгенерированное оглавление в байтовый массив
+    QByteArray GeneratedHtml;
+    GeneratedHtml.append(OutputDomTree.toByteArray());
 
-    return true;
+    return GeneratedHtml;
 }
