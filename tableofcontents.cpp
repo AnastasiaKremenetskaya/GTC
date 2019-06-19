@@ -19,7 +19,6 @@ TableOfContents::TableOfContents(const QString InputPathToHtml, const QString Ou
 void TableOfContents::deleteThisIsForTest(){
     for (int i = 0; i < this->HeaderCollection.length(); i++) {
         qDebug() << this->HeaderCollection[i].text();
-
     }
 }
 
@@ -52,7 +51,7 @@ bool TableOfContents::validateXml() {
     return true;
 }
 
-void TableOfContents::generateTOC(QDomNode CurrentNode) {
+void TableOfContents::parseHeadersInTree(QDomNode CurrentNode) {
 
     QVector<QDomNode> NodeChildren; ///> Cписок детей данного узла
 
@@ -68,10 +67,10 @@ void TableOfContents::generateTOC(QDomNode CurrentNode) {
     }
 
     //Запомнить элементы, являющиеся заголовочными тегами
-    parseHeaders(NodeChildren);
+    parseHeadersInNode(NodeChildren);
 }
 
-void TableOfContents::parseHeaders(QVector<QDomNode> & NodeChildren ) {
+void TableOfContents::parseHeadersInNode(QVector<QDomNode> & NodeChildren ) {
 
     //Для каждого списка детей узла
     for (int i = 0; i < NodeChildren.length(); i++) {
@@ -135,8 +134,14 @@ void TableOfContents::getHeaderNestingOrder() {
 void TableOfContents::modifyHeaderCollectionAttributes() {
     //Для каждого элемента коллекции веб-элементов
     for (int i = 0; i < this->HeaderCollection.length(); i++) {
+
         //Добавить якорную ссылку
         HeaderCollection[i].setAttribute("href", this->InputPathToHtml+"#"+HeaderCollection[i].attributeNode("id").value());
+
+        //Открывать ссылку в новом окне
+        HeaderCollection[i].setAttribute("target", "_blank");
+
+        //Заменить заголовочный тег на ссылочный
         HeaderCollection[i].setTagName("a");
     }
 }
@@ -158,14 +163,14 @@ void TableOfContents::createOutputTree() {
     QDomNode MainUl = OutputDomTree.createElement("ul");
     body.appendChild(MainUl);
 
-    //Задать вложенность прочим заголовкам
-
     //Для каждого найденного заголовка
     for (int i = 0; i < HeaderCollection.length() && i < NestingOrder.length(); i++) {
+
+        //Задать вложенность заголовкам
         appendNestingLevels(HeaderCollection[i], NestingOrder[i], MainUl);
     }
 
-    qDebug() <<"Please, work/n" <<OutputDomTree.toString();
+    qDebug() <<"Please, work" <<OutputDomTree.toString();
 }
 
 void TableOfContents::appendNestingLevels(QDomElement &CurrentElement, int LevelAmount, QDomNode NestingNode) { 
@@ -246,19 +251,19 @@ void TableOfContents::appendNestingLevels(QDomElement &CurrentElement, int Level
 QByteArray TableOfContents::getGeneratedHtml() {
 
     //Выполнить поиск заголовочных тегов в исходном дом-дереве
-    generateTOC(this->Root);
+    parseHeadersInTree(this->Root);
 
     //Проверить документ на наличие заголовочных тегов
     if(this->HeaderCollection.length()==0)
         throw QString("Generation  of Table of contents is impossible: no headers in markup detected");
 
-    //Запомнить порядок вложенности
+    //Запомнить уровень заголовочных тегов для организации вложенности
     getHeaderNestingOrder();
 
-    //Сделать элементы якорными ссылками
+    //Заменить заголовочный тег на якорную ссылку
     modifyHeaderCollectionAttributes();
 
-    //Создать выходное дерево из необходимых элементов
+    //Создать выходное дерево из созданных якорей с соблюдением вложенности
     createOutputTree();
 
     //Записать сгенерированное оглавление в байтовый массив

@@ -1,12 +1,7 @@
-#include <QCoreApplication>
-#include <iostream>
-#include "fileinputmanager.h"
-#include "webinputmanager.h"
-#include "tableofcontents.h"
-#include "outputmanager.h"
-#include <QtXml/QDomDocument>
-
-#define qprint qDebug().nospace()
+/*!
+\file main.cpp
+\brief Файл, содержащий главную функцию программы
+*/
 
 /*!
 \mainpage
@@ -14,14 +9,25 @@
 *\author Кременецкая А.Д.
 
 Программа выполняет следующие функции:
-<ol>
-<li>ищет в коде заголовочные теги;</li>
-<li>на основании тегов организует вложенность;</li>
-<li>сообщает об ошибке в случае невалидной html-разметки;</li>
-</ol>
+<ul>
+<li>Ищет в коде заголовочные теги;</li>
+<li>На основании тегов организует вложенность;</li>
+<li>Сообщает об ошибке в случае невалидной html-разметки;</li>
+</ul>
 <p>Программа принимает на вход URL/путь к файлу, содержащему html-код</p>
 <p>Программа возвращает html-разметку со сгенерированным оглавлением с соблюдением вложенности</p>
 */
+
+#include <QCoreApplication>
+#include <iostream>
+#include "fileinputmanager.h"
+#include "webinputmanager.h"
+#include "tableofcontents.h"
+#include "outputmanager.h"
+#include <QtXml/QDomDocument>
+#include <QTextCodec>
+
+#define qprint qDebug().nospace()
 
 
 /*!Главная функция проекта
@@ -35,21 +41,20 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
+    setlocale(LC_ALL, "Russian");
 
-    //temporary
-    QString input("C:/QtCreator/Projects/example.html");
-    QString output("C:/QtCreator/Projects/result.html");
-    //temporary
+    QString input(argv[1]);
+    QString output(argv[2]);
 
-    QByteArray OutputHtml; ///> Строка со сгенерированным html-кодом
+    QByteArray OutputHtml; //!> Строка со сгенерированным html-кодом
 
-    QRegExp UrlRegexp("http(s)?:)"); ///> Регулярное выражение для проверки урла
+    QRegExp UrlRegexp("http(s)?:"); //!> Признак того, что данные получаются по урлу
 
     try {
         //Определить, откуда получать данные
         InputManager * IM;
 
-        if(QString(argv[1]).contains(UrlRegexp)) {
+        if(input.contains(UrlRegexp)) {
             IM = new WebInputManager();
         }
         else {
@@ -60,8 +65,7 @@ int main(int argc, char *argv[])
         IM->getData(input, output);
 
         //Конвертировать html-разметку в xml-разметку
-        IM->htmlToXml(output, output);
-
+        InputManager::htmlToXml(output, output);
 
         //------Генерация оглавления------//
         TableOfContents * TOC = new TableOfContents(input, output);
@@ -69,8 +73,8 @@ int main(int argc, char *argv[])
         OutputHtml = TOC->getGeneratedHtml();
 
         //------Вывод данных------//
-        OutputManager * OM = new OutputManager();
-        OM->writeHtml(OutputHtml, output);
+        if(OutputManager::writeHtml(OutputHtml, output))
+            qprint << "Done";
 
     }
 
@@ -78,5 +82,5 @@ int main(int argc, char *argv[])
         qprint << ErrorString;
     }
 
-    return a.exec();
+    return 0;
 }

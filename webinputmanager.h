@@ -29,9 +29,9 @@ public:
 
 private:
 
-    QNetworkAccessManager manager; ///< Объект запроса
-    QNetworkReply *response; ///< Запрос
-    QEventLoop event; ///> Цикл для загрузки асинхронных элементов
+    QNetworkAccessManager manager; //!< Объект запроса
+    QNetworkReply *response; //!< Запрос
+    QEventLoop event; //!> Цикл для загрузки асинхронных элементов
 };
 
 #endif // WEBINPUTMANAGER_H

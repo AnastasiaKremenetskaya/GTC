@@ -30,8 +30,8 @@ public:
     InputManager(void);
     virtual ~InputManager(void);
 
-    QByteArray InputHtmlAsBa; ///> Байтовый массив с входной html-разметкой
-    QString InputHtmlAsString; ///> Строка с входной html-разметкой
+    QByteArray InputHtmlAsBa; //!> Байтовый массив с входной html-разметкой
+    QString InputHtmlAsString; //!> Строка с входной html-разметкой
 
     /*!
         * Получает html-текст и представляет его в виде фрейма
@@ -47,7 +47,7 @@ public:
        *\param [in] OutputPathToXml - Путь к файлу/URL, где содержится xml-разметка
        *\return - возвращает true, если конвертация произошла успешно
        */
-    bool htmlToXml(const QString InputPathToHtml, const QString OutputPathToXml);
+    static bool htmlToXml(const QString InputPathToHtml, const QString OutputPathToXml);
 };
 
 #endif // INPUTMANAGER_H
